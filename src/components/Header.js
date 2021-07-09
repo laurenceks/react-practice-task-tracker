@@ -7,6 +7,7 @@ const Header = props => {
     const addBtnClick = () => {
         setAddTaskFormIsShown(() => !addTaskFormIsShown)
     }
+    console.log("In the header!")
     return (
         <header className="mb-5">
             <div className="d-flex align-items-center">

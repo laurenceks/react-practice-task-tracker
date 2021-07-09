@@ -1,6 +1,6 @@
 //Dependencies
 import {useState, useEffect} from "react";
-import {BrowserRouter as Router, Route} from "react-router-dom";
+import {HashRouter as Router, Route} from "react-router-dom";
 //Components
 import Header from "./components/Header"
 import Tasks from "./components/Tasks"
@@ -13,7 +13,12 @@ function App() {
     const userFirstName = "Laurence"
 
     const addTask = async (newTask) => {
-        await fetch("http://localhost:5000/tasks/", {
+        // await fetch("http://localhost:5000/tasks/", {
+        //     method: "POST",
+        //     headers: {"Content-type": "application/json"},
+        //     body: JSON.stringify(newTask)
+        // }).then(getTasks);
+        await fetch("php/insertTask.php", {
             method: "POST",
             headers: {"Content-type": "application/json"},
             body: JSON.stringify(newTask)
@@ -21,23 +26,34 @@ function App() {
     }
 
     const setReminder = async (id) => {
-        await fetch("http://localhost:5000/tasks/" + id, {method: "GET"}).then(res => res.json().then(x => {
-            const updatedTask = {...x, reminder: !x.reminder};
-            fetch("http://localhost:5000/tasks/" + id, {
-                method: "PUT", headers: {
-                    "Content-type": "Application/json"
-                }, body: JSON.stringify(updatedTask)
-            }).then(getTasks)
+        await fetch("php/getTaskById.php", {
+            method: "POST",
+            headers: {"Content-type": "application/json"},
+            body: JSON.stringify({id: id})
+        }).then(res => res.json().then(x => {
+            console.log(updatedTask)
+             fetch("php/updateTask.php", {
+                method: "POST",
+                headers: {"Content-type": "application/json"},
+                body: JSON.stringify(updatedTask)
+            }).then(getTasks);
+
         }));
     }
 
     const deleteTask = async (id) => {
-        await fetch("http://localhost:5000/tasks/" + id, {method: "DELETE"}).then(getTasks);
+        await fetch("php/deleteTask.php", {
+            method: "POST",
+            headers: {"Content-type": "application/json"},
+            body: JSON.stringify({id: id})
+        }).then(res => {
+            res.text().then(getTasks);
+        });
     }
 
     const getTasks = async () => {
         const fetchTasks = async () => {
-            const res = await fetch("http://localhost:5000/tasks")
+            const res = await fetch("php/getTasks.php")
             return await res.json();
         }
         const tasksFromServer = await fetchTasks()
@@ -45,22 +61,19 @@ function App() {
     }
 
     useEffect(() => {
+        console.log("Rendered! home")
         getTasks()
     }, [])
 
     return (
-        <Router>
-            <div className="container my-3 bg-light p-3 rounded-2" style={{maxWidth: "500px"}}>
-                <Route path="/" exact render={(props) => (
-                    <>
-                        <Header user={userFirstName} number={tasks.length} addTask={addTask}/>
-                        <Tasks tasks={tasks} onDoubleClick={setReminder} onDelete={deleteTask}/>
-                        <Footer/>
-                    </>
-                )}/>
-                <Route path="/about" component={About}/>
-            </div>
-        </Router>
+        <div className="container my-3 bg-light p-3 rounded-2" style={{maxWidth: "500px"}}>
+            <>
+                <Header user={userFirstName} number={tasks.length} addTask={addTask}/>
+                <Tasks tasks={tasks} onDoubleClick={setReminder} onDelete={deleteTask}/>
+                <Footer/>
+            </>
+            <About/>
+        </div>
     );
 }
 
