@@ -31,8 +31,8 @@ function App() {
             headers: {"Content-type": "application/json"},
             body: JSON.stringify({id: id})
         }).then(res => res.json().then(x => {
-            console.log(updatedTask)
-             fetch("php/updateTask.php", {
+            const updatedTask = {...x, reminder: !x.reminder}
+            fetch("php/updateTask.php", {
                 method: "POST",
                 headers: {"Content-type": "application/json"},
                 body: JSON.stringify(updatedTask)
@@ -54,10 +54,11 @@ function App() {
     const getTasks = async () => {
         const fetchTasks = async () => {
             const res = await fetch("php/getTasks.php")
-            return await res.json();
+            console.log("Result" + await res.text())
+            // return await res.json();
         }
-        const tasksFromServer = await fetchTasks()
-        setTasks(tasksFromServer.map((x, i) => x.id ? x : {...x, id: i + 1}))
+        //const tasksFromServer = await fetchTasks()
+        //setTasks(tasksFromServer.map((x, i) => x.id ? x : {...x, id: i + 1}))
     }
 
     useEffect(() => {
