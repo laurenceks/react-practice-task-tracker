@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import {useState} from "react";
 import {useHistory} from "react-router-dom";
-import {wait} from "@testing-library/react";
 
 const TaskForm = props => {
     const [title, setTitle] = useState(props.task.title || "");
