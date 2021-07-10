@@ -1,11 +1,13 @@
 import PropTypes from 'prop-types';
 import {useState} from "react";
 import {useHistory} from "react-router-dom";
+import {wait} from "@testing-library/react";
 
 const TaskForm = props => {
     const [title, setTitle] = useState(props.task.title || "");
     const [dateTime, setDateTime] = useState(props.task.dateTime || "");
     const [reminder, setReminder] = useState(props.task.reminder || false);
+    const id = props.task.id || null;
     const h = useHistory();
     const createDateTimeString = (x) => {
         setDateTime(`${x.date ? x.date : document.getElementById("iDate").value} ${x.time ? x.time : document.getElementById("iTime").value}`)
@@ -20,8 +22,7 @@ const TaskForm = props => {
                 const invalidInputs = [];
 
                 document.querySelectorAll("input, textarea").forEach(x => {
-                    console.log(x.type);
-                    if (!x.value || x.value === "") {
+                    if (x.type !== "submit" && (!x.value || x.value === "")) {
                         invalidInputs.push(x);
                         formIsValid = false;
                         x.classList.add("is-invalid");
@@ -52,7 +53,7 @@ const TaskForm = props => {
 
                 if (formIsValid) {
                     props.hideForm();
-                    props.onSubmit({title, dateTime, reminder});
+                    props.onSubmit({title: title, dateTime: dateTime, reminder: reminder, id: id || null});
                     e.target.reset();
                     h.push("/")
                 }
@@ -60,14 +61,14 @@ const TaskForm = props => {
             <div className="mb-3">
                 <label className="form-label">
                     Title
-                    <input className="form-control mt-2" type="text" placeholder="Task title"
+                    <input className="form-control mt-2" type="text" placeholder="Task title" defaultValue={title}
                            onChange={(e) => setTitle(e.target.value)}/>
                 </label>
             </div>
             <div className="mb-3">
                 <label className="form-label">
                     Day
-                    <input id="iDate" className="form-control mt-2" type="date"
+                    <input id="iDate" className="form-control mt-2" type="date" defaultValue={dateTime.substr(0, 10)}
                            onChange={(e) => createDateTimeString({date: e.target.value})}/>
                 </label>
             </div>
@@ -75,17 +76,18 @@ const TaskForm = props => {
                 <label className="form-label">
                     Time
                     <input id="iTime" className="form-control mt-2" type="time"
-                           onChange={(e) => createDateTimeString({time: e.target.value})}/>
+                           onChange={(e) => createDateTimeString({time: e.target.value})}
+                           defaultValue={dateTime.substr(11, 5)}/>
                 </label>
             </div>
             <div className="mb-3">
                 <label className="form-check-label">
                     Set reminder?
-                    <input className="form-check-input mx-2" type="checkbox"
+                    <input className="form-check-input mx-2" type="checkbox" checked={reminder}
                            onChange={(e) => setReminder(e.currentTarget.checked)}/>
                 </label>
             </div>
-            <input className="btn btn-success d-block w-100" type="submit" value={props.buttonText}/>
+            <input className="btn btn-success d-block w-100" type="submit" defaultValue={props.buttonText}/>
         </form>
     );
 };
@@ -102,6 +104,9 @@ TaskForm.defaultProps = {
         title: "",
         dateTime: "",
         reminder: false
+    },
+    onSubmit: () => {
+        console.warn("Task form submitted with no callback")
     }
 }
 

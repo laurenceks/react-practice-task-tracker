@@ -14,6 +14,7 @@ function App() {
     const userFirstName = "Laurence"
 
     const addTask = async (newTask) => {
+        console.log(newTask)
         await fetch("./php/insertTask.php", {
             method: "POST",
             headers: {"Content-type": "application/json"},
@@ -35,6 +36,15 @@ function App() {
             }).then(getTasks);
 
         }));
+    }
+
+    const updateTask = async (updatedTask) => {
+        console.log(updatedTask)
+        await fetch("./php/updateTask.php", {
+            method: "post",
+            headers:{"Content-type":"application/json"},
+            body: JSON.stringify(updatedTask)
+        }).then(getTasks)
     }
 
     const deleteTask = async (id) => {
@@ -71,7 +81,7 @@ function App() {
                 <Header user={userFirstName} number={tasks.length} addTask={addTask}/>
                 <Route path="/" exact render={() => (
                     <>
-                        <Tasks tasks={tasks} onDoubleClick={setReminder} onDelete={deleteTask}/>
+                        <Tasks tasks={tasks} setReminder={setReminder} onDelete={deleteTask} updateTask={updateTask}/>
                         <Footer/>
                     </>
                 )}/>

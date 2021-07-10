@@ -1,22 +1,31 @@
 import PropTypes from 'prop-types';
-import {FaTimes} from "react-icons/fa"
+import {useState} from "react";
+import TaskForm from "./TaskForm";
+import TaskRow from "./TaskRow";
 
 const Task = props => {
+    const [beingEdited, setBeingEdited] = useState(false);
     return (
-        <div
-            className={`user-select-none position-relative my-3 ${props.task.reminder && " border-start border-primary border-5 ps-3"}`}
-            key={props.task.id} style={{transition: "all 0.25s ease-out", cursor: 'pointer'}}
-            onDoubleClick={() => {
-                props.onDoubleClick(props.task.id)
-            }}>
-            <div className="d-flex align-items-center pe-2"><h3 className="w-100">{props.task.title}</h3>
-                <FaTimes className="text-danger" style={{cursor: "pointer"}}
-                         onClick={() => props.onDelete(props.task.id)}/></div>
-            <p>{props.task.dateTime}</p>
-        </div>
-    );
+        <>
+            {beingEdited ? <TaskForm task={props.task} hideForm={() => {
+                    setBeingEdited(false)
+                }} onSubmit={props.updateTask}/>
+                :
+                <TaskRow task={props.task}
+                         onDelete={props.onDelete}
+                         setReminder={props.setReminder}
+                         onClick={() => {
+                             setBeingEdited(true)
+                         }}
+
+                />
+            }
+        </>
+    )
 };
 
-Task.propTypes = {task: PropTypes.object};
+Task.propTypes = {
+    task: PropTypes.object
+};
 
 export default Task;
