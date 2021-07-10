@@ -5,8 +5,7 @@ const Task = props => {
     return (
         <div
             className={`user-select-none position-relative my-3 ${props.task.reminder && " border-start border-primary border-5 ps-3"}`}
-            stlye={{cursor: "pointer"}}
-            key={props.task.id} style={{transition: "all 0.25s ease-out"}}
+            key={props.task.id} style={{transition: "all 0.25s ease-out", cursor: 'pointer'}}
             onDoubleClick={() => {
                 props.onDoubleClick(props.task.id)
             }}>
