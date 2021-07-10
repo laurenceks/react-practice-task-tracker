@@ -13,11 +13,6 @@ function App() {
     const userFirstName = "Laurence"
 
     const addTask = async (newTask) => {
-        // await fetch("http://localhost:5000/tasks/", {
-        //     method: "POST",
-        //     headers: {"Content-type": "application/json"},
-        //     body: JSON.stringify(newTask)
-        // }).then(getTasks);
         await fetch("php/insertTask.php", {
             method: "POST",
             headers: {"Content-type": "application/json"},
@@ -53,12 +48,15 @@ function App() {
 
     const getTasks = async () => {
         const fetchTasks = async () => {
-            const res = await fetch("php/getTasks.php")
-            console.log("Result" + await res.text())
-            // return await res.json();
+            const res = await fetch("php/getTasks.php", {
+                method: "GET",
+            })
+            return await res.json();
         }
-        //const tasksFromServer = await fetchTasks()
-        //setTasks(tasksFromServer.map((x, i) => x.id ? x : {...x, id: i + 1}))
+        await fetchTasks();
+        const tasksFromServer = await fetchTasks()
+        console.log(tasksFromServer)
+        setTasks(tasksFromServer.map((x, i) => x.id ? x : {...x, id: i + 1}))
     }
 
     useEffect(() => {

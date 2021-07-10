@@ -1,0 +1,9 @@
+HOW TO MAKE PROXY WORK FOR LOCAL create-react-app DEV SERVER
+
+1. Install XAMMP and run APACHE
+2. Follow steps in https://medium.com/bb-tutorials-and-thoughts/react-how-to-proxy-to-backend-server-5588a9e0347
+3. Make sure to add files to devserver watchoptions ignore list to avoid reload on local database changes
+	e.g. watchOptions: {
+            ignored: [ignoredFiles(paths.appSrc), /public\/php/,'**/public/php/**','**/public/php/']
+        },
+	This goes in node_modules/react-scripts/config/webpackDevServer.config.js

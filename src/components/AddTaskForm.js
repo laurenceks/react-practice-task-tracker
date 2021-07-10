@@ -15,6 +15,7 @@ const AddTaskForm = props => {
             className="mb-3"
             onSubmit={(e) => {
                 e.preventDefault();
+                console.log("Submit!")
                 props.setAddTaskFormIsShown();
                 props.addTask({title, dateTime, reminder});
             }}>
@@ -28,7 +29,7 @@ const AddTaskForm = props => {
             <div className="mb-3">
                 <label className="form-label">
                     Day
-                    <input  id="iDate" className="form-control mt-2" type="date"
+                    <input id="iDate" className="form-control mt-2" type="date"
                            onChange={(e) => createDateTimeString({date: e.target.value})}/>
                 </label>
             </div>
