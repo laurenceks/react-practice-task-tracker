@@ -1,20 +1,21 @@
 //Dependencies
 import {useState, useEffect} from "react";
-import {HashRouter as Router, Route, Switch} from "react-router-dom";
+import {HashRouter as Router, Route} from "react-router-dom";
 //Components
 import Header from "./components/Header"
 import Tasks from "./components/Tasks"
 import Footer from "./components/Footer"
 import About from "./components/About";
-import AddTaskForm from "./components/AddTaskForm";
 
 function App() {
     const [tasks, setTasks] = useState([])
 
-    const userFirstName = "Laurence"
+    const userFirstName = "User"
 
     const addTask = async (newTask) => {
-        console.log(newTask)
+        //manually update state to make UI change instant
+        setTasks([...tasks, {...newTask, id: null}])
+        //then request change in DB, and update with latest DB list
         await fetch("./php/insertTask.php", {
             method: "POST",
             headers: {"Content-type": "application/json"},
@@ -23,6 +24,9 @@ function App() {
     }
 
     const setReminder = async (id) => {
+        //manually update state to make UI change instant
+        setTasks(tasks.map(x=>x.id === id ? {...x, reminder: !x.reminder} : x))
+        //then request change in DB, and update with latest DB list
         await fetch("./php/getTaskById.php", {
             method: "POST",
             headers: {"Content-type": "application/json"},
@@ -39,15 +43,20 @@ function App() {
     }
 
     const updateTask = async (updatedTask) => {
-        console.log(updatedTask)
+        //manually update state to make UI change instant
+        setTasks(tasks.map(x=>x.id === updatedTask.id ? updatedTask : x))
+        //then request change in DB, and update with latest DB list
         await fetch("./php/updateTask.php", {
             method: "post",
-            headers:{"Content-type":"application/json"},
+            headers: {"Content-type": "application/json"},
             body: JSON.stringify(updatedTask)
         }).then(getTasks)
     }
 
     const deleteTask = async (id) => {
+        //manually update state to make UI change instant
+        setTasks(tasks.filter(x => x.id !== id));
+        //then request change in DB, and update with latest DB list
         await fetch("./php/deleteTask.php", {
             method: "POST",
             headers: {"Content-type": "application/json"},
@@ -66,7 +75,6 @@ function App() {
         }
         await fetchTasks();
         const tasksFromServer = await fetchTasks()
-        console.log(tasksFromServer)
         setTasks(tasksFromServer.map((x, i) => x.id ? x : {...x, id: i + 1}))
     }
 
