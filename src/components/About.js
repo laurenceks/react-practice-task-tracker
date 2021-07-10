@@ -1,7 +1,6 @@
 import {Link} from "react-router-dom";
 
 const About = () => {
-    console.log("In about")
     return (
         <div className="text-center mt-3">
             <p>Version 1.0</p>
