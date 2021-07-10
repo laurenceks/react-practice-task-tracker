@@ -1,5 +1,5 @@
 import React from 'react';
-import {FaTimes, FaBell} from "react-icons/fa";
+import {FaTimes, FaBell, FaSlash} from "react-icons/fa";
 
 const TaskRow = props => {
     return (
@@ -9,16 +9,18 @@ const TaskRow = props => {
             onClick={props.onClick}>
             <div className="d-flex align-items-center pe-2">
                 <h3 className="w-100">{props.task.title}</h3>
-                <FaTimes className="text-danger me-3" style={{cursor: "pointer"}}
+                <FaTimes className="text-danger me-3" style={{cursor: "pointer", width: "1rem"}}
                          onClick={(e) => {
                              e.stopPropagation();
                              props.onDelete(props.task.id)
                          }}/>
-                <FaBell className="" style={{cursor: "pointer"}}
-                         onClick={(e) => {
-                             e.stopPropagation();
-                             props.setReminder(props.task.id)
-                         }}/>
+                <div className="position-relative" style={{width: "1rem", height:"1rem"}}>
+                    {props.task.reminder && <FaSlash className="position-absolute top-0 left-0 w-100 h-100 text-danger"/>}
+                    <FaBell className="position-absolute top-0 left-0 w-100 h-100" style={{cursor: "pointer", opacity: props.task.reminder ? 0.5 : 1}}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                props.setReminder(props.task.id)
+                            }}/></div>
             </div>
             <p>{props.task.dateTime}</p>
         </div>
