@@ -1,11 +1,12 @@
 //Dependencies
 import {useState, useEffect} from "react";
-import {HashRouter as Router, Route} from "react-router-dom";
+import {HashRouter as Router, Route, Switch} from "react-router-dom";
 //Components
 import Header from "./components/Header"
 import Tasks from "./components/Tasks"
 import Footer from "./components/Footer"
 import About from "./components/About";
+import AddTaskForm from "./components/AddTaskForm";
 
 function App() {
     const [tasks, setTasks] = useState([])
@@ -13,7 +14,7 @@ function App() {
     const userFirstName = "Laurence"
 
     const addTask = async (newTask) => {
-        await fetch("php/insertTask.php", {
+        await fetch("./php/insertTask.php", {
             method: "POST",
             headers: {"Content-type": "application/json"},
             body: JSON.stringify(newTask)
@@ -21,13 +22,13 @@ function App() {
     }
 
     const setReminder = async (id) => {
-        await fetch("php/getTaskById.php", {
+        await fetch("./php/getTaskById.php", {
             method: "POST",
             headers: {"Content-type": "application/json"},
             body: JSON.stringify({id: id})
         }).then(res => res.json().then(x => {
             const updatedTask = {...x, reminder: !x.reminder}
-            fetch("php/updateTask.php", {
+            fetch("./php/updateTask.php", {
                 method: "POST",
                 headers: {"Content-type": "application/json"},
                 body: JSON.stringify(updatedTask)
@@ -37,7 +38,7 @@ function App() {
     }
 
     const deleteTask = async (id) => {
-        await fetch("php/deleteTask.php", {
+        await fetch("./php/deleteTask.php", {
             method: "POST",
             headers: {"Content-type": "application/json"},
             body: JSON.stringify({id: id})
@@ -48,7 +49,7 @@ function App() {
 
     const getTasks = async () => {
         const fetchTasks = async () => {
-            const res = await fetch("php/getTasks.php", {
+            const res = await fetch("./php/getTasks.php", {
                 method: "GET",
             })
             return await res.json();
@@ -65,14 +66,20 @@ function App() {
     }, [])
 
     return (
-        <div className="container my-3 bg-light p-3 rounded-2" style={{maxWidth: "500px"}}>
-            <>
-                <Header user={userFirstName} number={tasks.length} addTask={addTask}/>
-                <Tasks tasks={tasks} onDoubleClick={setReminder} onDelete={deleteTask}/>
-                <Footer/>
-            </>
-            <About/>
-        </div>
+        <Router>
+            <div className="container my-3 bg-light p-3 rounded-2" style={{maxWidth: "500px"}}>
+                <Route path="/" render={(props) => (
+                    <>
+                        <Header user={userFirstName} number={tasks.length} addTask={addTask}/>
+                        <Route path="/" exact render={() => (
+                            <Tasks tasks={tasks} onDoubleClick={setReminder} onDelete={deleteTask}/>
+                        )}/>
+                        <Footer/>
+                    </>
+                )}/>
+                <Route path="/about" component={About}/>
+            </div>
+        </Router>
     );
 }
 

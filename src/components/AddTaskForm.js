@@ -15,9 +15,10 @@ const AddTaskForm = props => {
             className="mb-3"
             onSubmit={(e) => {
                 e.preventDefault();
-                console.log("Submit!")
-                props.setAddTaskFormIsShown();
+                props.hideForm();
                 props.addTask({title, dateTime, reminder});
+                e.target.reset();
+                window.location.hash="/";
             }}>
             <div className="mb-3">
                 <label className="form-label">
@@ -54,7 +55,7 @@ const AddTaskForm = props => {
 };
 
 AddTaskForm.propTypes = {
-    setAddTaskFormIsShown: PropTypes.bool,
+    hideForm: PropTypes.func,
     addTask: PropTypes.func
 };
 
