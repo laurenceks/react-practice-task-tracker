@@ -25,3 +25,10 @@ yarn-error.log*
 #phpStorm
 
 /.idea
+
+#db
+
+public/php/store.db
+/public/php/store.db
+*/public/php/store.db
+**/public/php/store.db
