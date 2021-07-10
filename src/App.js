@@ -68,12 +68,10 @@ function App() {
     return (
         <Router>
             <div className="container my-3 bg-light p-3 rounded-2" style={{maxWidth: "500px"}}>
-                <Route path="/" render={(props) => (
+                <Header user={userFirstName} number={tasks.length} addTask={addTask}/>
+                <Route path="/" exact render={() => (
                     <>
-                        <Header user={userFirstName} number={tasks.length} addTask={addTask}/>
-                        <Route path="/" exact render={() => (
-                            <Tasks tasks={tasks} onDoubleClick={setReminder} onDelete={deleteTask}/>
-                        )}/>
+                        <Tasks tasks={tasks} onDoubleClick={setReminder} onDelete={deleteTask}/>
                         <Footer/>
                     </>
                 )}/>
