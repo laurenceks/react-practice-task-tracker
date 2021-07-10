@@ -28,7 +28,4 @@ yarn-error.log*
 
 #db
 
-public/php/store.db
 /public/php/store.db
-*/public/php/store.db
-**/public/php/store.db
