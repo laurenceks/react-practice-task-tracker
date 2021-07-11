@@ -5,6 +5,7 @@ $data = json_decode(file_get_contents('php://input'));
 $task = [
     "title" => $data->{"title"},
     "dateTime" => $data->{"dateTime"},
-    "reminder" => $data->{"reminder"}
+    "reminder" => $data->{"reminder"},
+    "user" => $data->{"user"}
 ];
 $tasksStore->insert($task);

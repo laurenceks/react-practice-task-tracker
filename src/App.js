@@ -1,17 +1,20 @@
 //Dependencies
 import {useState, useEffect} from "react";
-import {HashRouter as Router, Route} from "react-router-dom";
+import {HashRouter as Router, Route, Switch, Redirect} from "react-router-dom";
 //Components
-import Header from "./components/Header"
-import Tasks from "./components/Tasks"
-import Footer from "./components/Footer"
-import About from "./components/About";
+import Main from "./components/Main";
+import Header from "./components/Header";
+import Login from "./components/Login"
 
 function App() {
+    let userCookie = decodeURIComponent(document.cookie).match(/user=([\S ]+?);|user=([\S ]+?)$/)
+    if(userCookie){
+        userCookie = userCookie.filter( (x) => {
+            return x && x !== document.cookie;
+        })[0];
+    }
+    const [user, setUser] = useState(!userCookie || userCookie === "" ? null : userCookie);
     const [tasks, setTasks] = useState([])
-
-    const userFirstName = "User"
-
     const addTask = async (newTask) => {
         //manually update state to make UI change instant
         setTasks([...tasks, {...newTask, id: null}])
@@ -19,57 +22,15 @@ function App() {
         await fetch("./php/insertTask.php", {
             method: "POST",
             headers: {"Content-type": "application/json"},
-            body: JSON.stringify(newTask)
+            body: JSON.stringify({...newTask, user: user})
         }).then(getTasks);
     }
-
-    const setReminder = async (id) => {
-        //manually update state to make UI change instant
-        setTasks(tasks.map(x=>x.id === id ? {...x, reminder: !x.reminder} : x))
-        //then request change in DB, and update with latest DB list
-        await fetch("./php/getTaskById.php", {
-            method: "POST",
-            headers: {"Content-type": "application/json"},
-            body: JSON.stringify({id: id})
-        }).then(res => res.json().then(x => {
-            const updatedTask = {...x, reminder: !x.reminder}
-            fetch("./php/updateTask.php", {
-                method: "POST",
-                headers: {"Content-type": "application/json"},
-                body: JSON.stringify(updatedTask)
-            }).then(getTasks);
-
-        }));
-    }
-
-    const updateTask = async (updatedTask) => {
-        //manually update state to make UI change instant
-        setTasks(tasks.map(x=>x.id === updatedTask.id ? updatedTask : x))
-        //then request change in DB, and update with latest DB list
-        await fetch("./php/updateTask.php", {
-            method: "post",
-            headers: {"Content-type": "application/json"},
-            body: JSON.stringify(updatedTask)
-        }).then(getTasks)
-    }
-
-    const deleteTask = async (id) => {
-        //manually update state to make UI change instant
-        setTasks(tasks.filter(x => x.id !== id));
-        //then request change in DB, and update with latest DB list
-        await fetch("./php/deleteTask.php", {
-            method: "POST",
-            headers: {"Content-type": "application/json"},
-            body: JSON.stringify({id: id})
-        }).then(res => {
-            res.text().then(getTasks);
-        });
-    }
-
     const getTasks = async () => {
         const fetchTasks = async () => {
             const res = await fetch("./php/getTasks.php", {
-                method: "GET",
+                method: "POST",
+                headers: {"Content-type": "application/json"},
+                body: JSON.stringify({user: user})
             })
             return await res.json();
         }
@@ -78,22 +39,22 @@ function App() {
         setTasks(tasksFromServer.map((x, i) => x.id ? x : {...x, id: i + 1}))
     }
 
-    useEffect(() => {
-        console.log("Rendered! home")
-        getTasks()
-    }, [])
-
     return (
         <Router>
             <div className="container my-3 bg-light p-3 rounded-2" style={{maxWidth: "500px"}}>
-                <Header user={userFirstName} number={tasks.length} addTask={addTask}/>
-                <Route path="/" exact render={() => (
-                    <>
-                        <Tasks tasks={tasks} setReminder={setReminder} onDelete={deleteTask} updateTask={updateTask}/>
-                        <Footer/>
-                    </>
-                )}/>
-                <Route path="/about" component={About}/>
+                <Header user={user} number={tasks.length} addTask={addTask} setTasks={setTasks} tasks={tasks}/>
+                <Switch>
+                    <Route path="/login">
+                        <Login setUser={setUser}/>
+                    </Route>
+                    <Route path="/" render={() => (
+                        user ?
+                            <Main user={user} addTask={addTask} getTasks={getTasks} setTasks={setTasks} tasks={tasks}
+                                  setUser={setUser}/>
+                            :
+                            <Redirect to="/login"/>
+                    )}/>
+                </Switch>
             </div>
         </Router>
     );
